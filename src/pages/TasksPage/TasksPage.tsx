@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import TaskCard from "./components/TaskCard"
-import { fetchTasks } from "./api/tasks"
+import { TaskCard, fetchTasks } from '@/entities/task'
 import { Link } from "react-router-dom"
 import { useEffect, useState } from "react"
 

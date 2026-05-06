@@ -1,4 +1,4 @@
-import type { Task } from "../types/task";
+import type { Task } from "../model/task";
 
 export const fetchTasks = async (): Promise<Task[]> => {
     const response = await fetch('https://jsonplaceholder.typicode.com/todos')
