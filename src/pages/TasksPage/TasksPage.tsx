@@ -1,12 +1,15 @@
 import styled from 'styled-components'
 import { useQuery } from '@tanstack/react-query'
-import { useSelector } from 'react-redux'
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { TaskCard, fetchTasks } from '@/entities/task'
 import FilterBar from '@/entities/task/ui/FilterBar'
 import type { RootState } from '@/app/store'
 import type { Task } from '@/entities/task'
+import { increment, decrement } from '@/entities/task/model/counterSlice'
+import type { AppDispatch } from '@/app/store'
+import { useSelector, useDispatch } from 'react-redux'
+
 
 const Page = styled.div`
   max-width: 600px;
@@ -38,6 +41,9 @@ const TasksPage = () => {
   }, [tasks])
 
   const filter = useSelector((state: RootState) => state.filter.value)
+  const done = useSelector((state: RootState) => state.counter.done)
+  const dispatch = useDispatch<AppDispatch>()
+
 
   const visibleTasks = localTasks.filter(task => {
     if (filter === 'all') return true
@@ -46,8 +52,17 @@ const TasksPage = () => {
   })
 
   const toggleTask = (id: number) => {
-    setLocalTasks(localTasks.map(task =>
-      task.id === id ? { ...task, completed: !task.completed } : task
+    const task = localTasks.find(t => t.id === id)
+    if (!task) return
+
+    if (task.completed) {
+      dispatch(decrement())
+    } else {
+      dispatch(increment())
+    }
+
+    setLocalTasks(localTasks.map(t =>
+      t.id === id ? { ...t, completed: !t.completed } : t
     ))
   }
 
@@ -55,6 +70,8 @@ const TasksPage = () => {
     <Page>
       <Link to='/about'>О приложении</Link>
       <Title>Мои задачи</Title>
+      <p>Выполнено задач: {done}</p>
+
       <FilterBar />
       {isLoading && <p>Загрузка...</p>}
       <TaskList>

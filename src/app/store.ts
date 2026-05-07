@@ -1,9 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
 import filterReducer from '@/entities/task/model/filterSlice'
+import counterReducer from '@/entities/task/model/counterSlice'
 
 export const store = configureStore({
     reducer: {
-        filter: filterReducer
+        filter: filterReducer,
+        counter: counterReducer
     }
 })
 
