@@ -1,12 +1,29 @@
+import styled from 'styled-components'
 import { useQuery } from '@tanstack/react-query'
 import { useSelector } from 'react-redux'
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { TaskCard } from '@/entities/task'
-import { fetchTasks } from '@/entities/task'
+import { TaskCard, fetchTasks } from '@/entities/task'
 import FilterBar from '@/entities/task/ui/FilterBar'
 import type { RootState } from '@/app/store'
 import type { Task } from '@/entities/task'
+
+const Page = styled.div`
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 32px 16px;
+`
+
+const Title = styled.h1`
+  font-size: 24px;
+  margin-bottom: 8px;
+`
+
+const TaskList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`
 
 const TasksPage = () => {
   const { data: tasks = [], isLoading } = useQuery({
@@ -20,32 +37,32 @@ const TasksPage = () => {
     setLocalTasks(tasks)
   }, [tasks])
 
-  // Читаем текущий фильтр из store
   const filter = useSelector((state: RootState) => state.filter.value)
 
-  // Фильтруем задачи в зависимости от выбранного фильтра
   const visibleTasks = localTasks.filter(task => {
     if (filter === 'all') return true
-    if (filter === 'active') return !task.done
-    if (filter === 'done') return task.done
+    if (filter === 'active') return !task.completed
+    if (filter === 'done') return task.completed
   })
 
   const toggleTask = (id: number) => {
     setLocalTasks(localTasks.map(task =>
-      task.id === id ? { ...task, done: !task.done } : task
+      task.id === id ? { ...task, completed: !task.completed } : task
     ))
   }
 
   return (
-    <div>
+    <Page>
       <Link to='/about'>О приложении</Link>
-      <h1>Мои задачи</h1>
+      <Title>Мои задачи</Title>
       <FilterBar />
       {isLoading && <p>Загрузка...</p>}
-      {visibleTasks.map(task =>
-        <TaskCard onToggle={toggleTask} key={task.id} task={task} />
-      )}
-    </div>
+      <TaskList>
+        {visibleTasks.map(task =>
+          <TaskCard onToggle={toggleTask} key={task.id} task={task} />
+        )}
+      </TaskList>
+    </Page>
   )
 }
 
